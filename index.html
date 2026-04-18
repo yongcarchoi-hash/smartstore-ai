@@ -10,13 +10,14 @@
     --bg: #f7f7f5; --surface: #fff; --border: #e4e4e0;
     --text: #1a1a18; --muted: #6b6b68; --hint: #9b9b98;
     --accent: #2563eb;
+    --naver: #03c75a; --naver-bg: #f0fdf6; --naver-border: #bbf7d0;
+    --coupang: #e52222; --coupang-bg: #fff5f5; --coupang-border: #fecaca;
     --success: #16a34a; --success-bg: #f0fdf4;
     --danger: #dc2626; --danger-bg: #fef2f2;
     --warning: #d97706; --warning-bg: #fffbeb;
   }
   body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* 상단 바 */
   .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
   .topbar-left { font-size: 15px; font-weight: 600; }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
@@ -28,12 +29,10 @@
   .logout-btn { font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
   .logout-btn:hover { background: var(--bg); }
 
-  /* 레이아웃 */
   .main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 14px; }
   .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 16px; }
 
-  /* 입력 폼 */
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .field { display: flex; flex-direction: column; gap: 6px; }
   .field label { font-size: 13px; color: var(--muted); font-weight: 500; }
@@ -41,14 +40,12 @@
   input[type="text"], textarea, select {
     width: 100%; font-family: inherit; font-size: 14px; color: var(--text);
     background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 12px; outline: none;
-    transition: border-color 0.15s;
+    border-radius: 8px; padding: 10px 12px; outline: none; transition: border-color 0.15s;
   }
   input:focus, textarea:focus, select:focus { border-color: var(--accent); background: #fff; }
   textarea { resize: none; line-height: 1.55; min-height: 88px; }
   select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239b9b98' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 
-  /* 버튼 */
   .btn-row { display: flex; gap: 10px; margin-top: 2px; }
   .btn-primary { flex: 1; padding: 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
   .btn-primary:hover { opacity: 0.85; }
@@ -56,19 +53,29 @@
   .btn-reset { padding: 12px 20px; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; }
   .btn-reset:hover { background: #ebebea; }
 
-  /* 업그레이드 배너 */
   .upgrade-banner { background: #eff4ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
   .upgrade-banner p { font-size: 13px; color: var(--accent); font-weight: 500; }
   .upgrade-banner small { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
   .upgrade-btn { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 9px 16px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 
-  /* 로딩 */
   .loading { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 14px; }
   .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .error-box { background: var(--danger-bg); border: 1px solid #fecaca; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: var(--danger); }
 
-  /* 결과 */
+  /* 플랫폼 탭 */
+  .platform-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .platform-tab { flex: 1; padding: 10px; font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; border: 1.5px solid var(--border); background: var(--bg); color: var(--muted); transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .platform-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.4; }
+  .platform-tab.active-naver { border-color: var(--naver); background: var(--naver-bg); color: var(--naver); }
+  .platform-tab.active-naver .dot { opacity: 1; }
+  .platform-tab.active-coupang { border-color: var(--coupang); background: var(--coupang-bg); color: var(--coupang); }
+  .platform-tab.active-coupang .dot { opacity: 1; }
+
+  .platform-panel { display: none; }
+  .platform-panel.active { display: block; }
+
+  /* 결과 공통 */
   .block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--hint); }
   .section-block { margin-bottom: 18px; }
@@ -91,16 +98,18 @@
   .tag.copied { background: var(--success-bg); border-color: #bbf7d0; color: var(--success); }
   .tag-hint { font-size: 12px; color: var(--hint); margin-bottom: 8px; }
 
+  .keyword-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+  .keyword { background: #fff5f5; border: 1px solid var(--coupang-border); border-radius: 20px; padding: 6px 13px; font-size: 13px; color: #991b1b; cursor: pointer; transition: background 0.12s; user-select: none; }
+  .keyword:hover { background: #fee2e2; }
+  .keyword.copied { background: var(--success-bg); border-color: #bbf7d0; color: var(--success); }
+
   .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
 
   .copy-btn { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; cursor: pointer; font-family: inherit; white-space: nowrap; }
   .copy-btn:hover { background: var(--bg); }
   .copy-btn.copied { color: var(--success); border-color: #bbf7d0; background: var(--success-bg); }
 
-  @media (max-width: 540px) {
-    .form-grid { grid-template-columns: 1fr; gap: 12px; }
-    .topbar { padding: 0 1rem; }
-  }
+  @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
 </style>
 </head>
 <body>
@@ -115,7 +124,6 @@
 </div>
 
 <div class="main">
-
   <div id="upgradeBanner" style="display:none" class="upgrade-banner">
     <div>
       <p>오늘 무료 사용 횟수(3회)를 모두 사용했습니다</p>
@@ -126,7 +134,6 @@
 
   <div class="card">
     <div class="card-title">상품 정보 입력</div>
-
     <div class="form-grid">
       <div class="field">
         <label>상품명</label>
@@ -137,7 +144,6 @@
         <input type="text" id="price" placeholder="예: 18,000원">
       </div>
     </div>
-
     <div class="form-grid">
       <div class="field">
         <label>주요 특징 (2~3가지)</label>
@@ -148,7 +154,6 @@
         <textarea id="target" placeholder="예: 직장인 출퇴근, 운동, 캠핑, 선물용"></textarea>
       </div>
     </div>
-
     <div class="form-grid" style="margin-bottom:0">
       <div class="field">
         <label>제조자/브랜드 <span class="opt">(선택)</span></label>
@@ -166,9 +171,8 @@
         </select>
       </div>
     </div>
-
     <div class="btn-row" style="margin-top:16px">
-      <button class="btn-primary" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
+      <button class="btn-primary" id="runBtn" onclick="runGenerate()">스마트스토어 + 쿠팡 동시 생성하기 →</button>
       <button class="btn-reset" id="resetBtn" onclick="resetForm()">새 상품 입력</button>
     </div>
   </div>
@@ -178,7 +182,7 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
   const FREE_LIMIT = 3;
   let usageCount = 0;
 
@@ -235,6 +239,7 @@
     document.getElementById('origin').value = '';
     document.getElementById('resultArea').innerHTML = '';
     document.getElementById('resetBtn').style.display = 'none';
+    document.getElementById('runBtn').textContent = '스마트스토어 + 쿠팡 동시 생성하기 →';
     document.getElementById('productName').focus();
   }
 
@@ -253,19 +258,30 @@
     });
   }
 
+  function switchTab(platform) {
+    document.querySelectorAll('.platform-tab').forEach(t => {
+      t.className = 'platform-tab';
+    });
+    document.querySelectorAll('.platform-panel').forEach(p => {
+      p.classList.remove('active');
+    });
+    document.getElementById('tab-' + platform).classList.add('active-' + platform);
+    document.getElementById('panel-' + platform).classList.add('active');
+  }
+
   async function runGenerate() {
-    const productName   = document.getElementById('productName').value.trim();
-    const price         = document.getElementById('price').value.trim();
-    const features      = document.getElementById('features').value.trim();
-    const target        = document.getElementById('target').value.trim();
-    const manufacturer  = document.getElementById('manufacturer').value.trim();
-    const origin        = document.getElementById('origin').value;
+    const productName  = document.getElementById('productName').value.trim();
+    const price        = document.getElementById('price').value.trim();
+    const features     = document.getElementById('features').value.trim();
+    const target       = document.getElementById('target').value.trim();
+    const manufacturer = document.getElementById('manufacturer').value.trim();
+    const origin       = document.getElementById('origin').value;
     if (!productName) { alert('상품명을 입력해주세요'); return; }
 
     const btn = document.getElementById('runBtn');
     btn.disabled = true; btn.textContent = '생성 중...';
     document.getElementById('resultArea').innerHTML =
-      '<div class="loading"><span class="spinner"></span>Claude가 콘텐츠를 생성 중입니다...</div>';
+      '<div class="loading"><span class="spinner"></span>네이버 + 쿠팡 콘텐츠를 동시 생성 중입니다...</div>';
 
     try {
       const res = await fetch('/api/generate', {
@@ -273,6 +289,7 @@
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ productName, price, features, target, manufacturer, origin })
       });
+
       if (res.status === 401) { localStorage.clear(); window.location.href = '/login.html'; return; }
       if (res.status === 429) { usageCount = FREE_LIMIT; updateUI(); throw new Error('오늘 무료 사용 횟수(3회)를 모두 사용했습니다'); }
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || `오류 (${res.status})`); }
@@ -284,61 +301,107 @@
       document.getElementById('resultArea').innerHTML = `<div class="error-box">오류: ${err.message}</div>`;
     } finally {
       if (usageCount < FREE_LIMIT) btn.disabled = false;
-      btn.textContent = '상품 등록 콘텐츠 생성하기 →';
+      btn.textContent = '스마트스토어 + 쿠팡 동시 생성하기 →';
     }
   }
 
-  function renderResult(data) {
-    const names  = data.product_names || [];
-    const tags   = data.tags || [];
-    const desc   = data.description || '';
-    const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
-
-    const namesHtml = names.map((n, i) => {
+  function renderNames(names, maxLen, labels) {
+    return names.map((n, i) => {
       const len = n.length;
-      const safe = n.replace(/'/g, "\\'");
+      const safe = n.replace(/'/g, "\\'").replace(/"/g, '&quot;');
       return `<div class="name-item">
         <div class="name-left">
           <span class="name-badge">${labels[i]||''}</span>
           <div class="name-text">${n}</div>
         </div>
         <div class="name-right">
-          <span class="char-badge ${len<=40?'char-ok':'char-over'}">${len}자</span>
+          <span class="char-badge ${len<=maxLen?'char-ok':'char-over'}">${len}자</span>
           <button class="copy-btn" onclick="copyText('${safe}',this)">복사</button>
         </div>
       </div>`;
     }).join('');
+  }
 
-    const tagsHtml = tags.map(t =>
+  function renderResult(data) {
+    const naver   = data.naver   || {};
+    const coupang = data.coupang || {};
+
+    const naverLabels   = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
+    const coupangLabels = ['브랜드+키워드형', '스펙 강조형', '타겟+혜택형'];
+
+    const naverTags = naver.tags || [];
+    const coupangKws = coupang.keywords || [];
+
+    const naverTagsHtml = naverTags.map(t =>
       `<span class="tag" onclick="copyTag(this,'${t}')">${t}</span>`
     ).join('');
 
-    const safeDesc = desc.replace(/'/g, "\\'");
+    const coupangKwsHtml = coupangKws.map(k =>
+      `<span class="keyword" onclick="copyTag(this,'${k}')">${k}</span>`
+    ).join('');
+
+    const naverDesc   = (naver.description   || '').replace(/'/g, "\\'");
+    const coupangDesc = (coupang.description || '').replace(/'/g, "\\'");
 
     document.getElementById('resultArea').innerHTML = `
       <div class="card">
-        <div class="section-block">
-          <div class="block-header">
-            <div class="block-label">상품명 3가지 버전</div>
-          </div>
-          ${namesHtml}
+        <div class="platform-tabs">
+          <button class="platform-tab active-naver" id="tab-naver" onclick="switchTab('naver')">
+            <span class="dot"></span> 네이버 스마트스토어
+          </button>
+          <button class="platform-tab" id="tab-coupang" onclick="switchTab('coupang')">
+            <span class="dot"></span> 쿠팡
+          </button>
         </div>
-        <div class="divider"></div>
-        <div class="section-block">
-          <div class="block-header">
-            <div class="block-label">검색 태그 ${tags.length}개</div>
-            <button class="copy-btn" onclick="copyText('${tags.join(' ')}',this)">전체 복사</button>
+
+        <!-- 네이버 패널 -->
+        <div class="platform-panel active" id="panel-naver">
+          <div class="section-block">
+            <div class="block-header"><div class="block-label">상품명 3가지 버전</div></div>
+            ${renderNames(naver.product_names||[], 40, naverLabels)}
           </div>
-          <p class="tag-hint">태그 클릭 시 개별 복사</p>
-          <div class="tags-wrap">${tagsHtml}</div>
+          <div class="divider"></div>
+          <div class="section-block">
+            <div class="block-header">
+              <div class="block-label">검색 태그 ${naverTags.length}개</div>
+              <button class="copy-btn" onclick="copyText('${naverTags.join(' ')}',this)">전체 복사</button>
+            </div>
+            <p class="tag-hint">태그 클릭 시 개별 복사</p>
+            <div class="tags-wrap">${naverTagsHtml}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="section-block">
+            <div class="block-header">
+              <div class="block-label">상세 설명문 (${(naver.description||'').length}자)</div>
+              <button class="copy-btn" onclick="copyText('${naverDesc}',this)">복사</button>
+            </div>
+            <div class="desc-box">${naver.description||''}</div>
+          </div>
         </div>
-        <div class="divider"></div>
-        <div class="section-block">
-          <div class="block-header">
-            <div class="block-label">상세 설명문 (${desc.length}자)</div>
-            <button class="copy-btn" onclick="copyText('${safeDesc}',this)">복사</button>
+
+        <!-- 쿠팡 패널 -->
+        <div class="platform-panel" id="panel-coupang">
+          <div class="section-block">
+            <div class="block-header"><div class="block-label">상품명 3가지 버전</div></div>
+            ${renderNames(coupang.product_names||[], 50, coupangLabels)}
           </div>
-          <div class="desc-box">${desc}</div>
+          <div class="divider"></div>
+          <div class="section-block">
+            <div class="block-header">
+              <div class="block-label">검색어 ${coupangKws.length}개</div>
+              <button class="copy-btn" onclick="copyText('${coupangKws.join(',')}',this)">전체 복사</button>
+            </div>
+            <p class="tag-hint">검색어 클릭 시 개별 복사</p>
+            <div class="keyword-wrap">${coupangKwsHtml}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="section-block">
+            <div class="block-header">
+              <div class="block-label">상세 설명문 (${(coupang.description||'').length}자)</div>
+              <button class="copy-btn" onclick="copyText('${coupangDesc}',this)">복사</button>
+            </div>
+            <div class="desc-box">${coupang.description||''}</div>
+          </div>
         </div>
       </div>`;
   }
