@@ -15,81 +15,92 @@
     --warning: #d97706; --warning-bg: #fffbeb;
   }
   body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* 상단 바 */
   .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
   .topbar-left { font-size: 15px; font-weight: 600; }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
   .usage-badge { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
-  .u-ok { background: var(--success-bg); color: var(--success); }
-  .u-low { background: var(--warning-bg); color: var(--warning); }
-  .u-empty { background: var(--danger-bg); color: var(--danger); }
+  .u-ok    { background: var(--success-bg); color: var(--success); }
+  .u-low   { background: var(--warning-bg); color: var(--warning); }
+  .u-empty { background: var(--danger-bg);  color: var(--danger);  }
   .user-email { font-size: 12px; color: var(--muted); }
   .logout-btn { font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
+  .logout-btn:hover { background: var(--bg); }
+
+  /* 레이아웃 */
   .main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 14px; }
-  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 14px; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .field { display: flex; flex-direction: column; gap: 5px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 14px; }
+  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 16px; }
+
+  /* 입력 폼 */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
   .field label { font-size: 13px; color: var(--muted); font-weight: 500; }
-  input[type="text"], textarea { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; transition: border-color 0.15s; resize: none; }
-  input:focus, textarea:focus { border-color: var(--accent); }
-  textarea { min-height: 80px; line-height: 1.5; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  select { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; cursor: pointer; }
-  select:focus { border-color: var(--accent); }
-  .notice-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); gap: 12px; }
-  .notice-row:last-child { border-bottom: none; }
-  .notice-key { font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; width: 130px; flex-shrink: 0; }
-  .notice-val { font-size: 13px; color: var(--text); flex: 1; }
-  .notice-copy { font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; white-space: nowrap; flex-shrink: 0; }
-  .notice-copy:hover { background: var(--border); }
-  .notice-copy.copied { color: var(--success); border-color: var(--success); background: var(--success-bg); }
-  .notice-guide { font-size: 12px; color: var(--warning); background: var(--warning-bg); border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; }
-  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-  .btn { flex: 1; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
-  .btn:hover { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-reset { flex: 0 0 auto; padding: 11px 18px; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; }
-  .btn-reset:hover { background: var(--border); }
+  .field label .opt { font-size: 12px; color: var(--hint); font-weight: 400; }
+  input[type="text"], textarea, select {
+    width: 100%; font-family: inherit; font-size: 14px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); background: #fff; }
+  textarea { resize: none; line-height: 1.55; min-height: 88px; }
+  select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239b9b98' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  /* 버튼 */
+  .btn-row { display: flex; gap: 10px; margin-top: 2px; }
+  .btn-primary { flex: 1; padding: 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-reset { padding: 12px 20px; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; }
+  .btn-reset:hover { background: #ebebea; }
+
+  /* 업그레이드 배너 */
   .upgrade-banner { background: #eff4ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
   .upgrade-banner p { font-size: 13px; color: var(--accent); font-weight: 500; }
-  .upgrade-banner span { font-size: 12px; color: var(--muted); margin-top: 2px; display: block; }
-  .upgrade-btn { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 8px 14px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .upgrade-banner small { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
+  .upgrade-btn { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 9px 16px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+  /* 로딩 */
   .loading { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 14px; }
   .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .error-box { background: var(--danger-bg); border: 1px solid #fecaca; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: var(--danger); }
-  .section-block { margin-bottom: 16px; }
-  .section-block:last-child { margin-bottom: 0; }
-  .block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+
+  /* 결과 */
+  .block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--hint); }
-  .copy-all-btn { font-size: 11px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; }
-  .copy-all-btn:hover { background: var(--border); }
-  .copy-all-btn.copied { color: var(--success); border-color: var(--success); background: var(--success-bg); }
-  .name-item { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .section-block { margin-bottom: 18px; }
+  .section-block:last-child { margin-bottom: 0; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  .name-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 7px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .name-item:last-child { margin-bottom: 0; }
-  .name-left { flex: 1; }
-  .name-badge { font-size: 10px; font-weight: 600; color: var(--hint); background: var(--border); border-radius: 4px; padding: 2px 6px; white-space: nowrap; margin-bottom: 5px; display: inline-block; }
-  .name-text { font-size: 14px; line-height: 1.4; }
-  .name-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .char-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
-  .char-ok { background: var(--success-bg); color: var(--success); }
-  .char-over { background: var(--danger-bg); color: var(--danger); }
-  .copy-btn { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; white-space: nowrap; }
-  .copy-btn:hover { background: var(--bg); }
-  .copy-btn.copied { color: var(--success); border-color: var(--success); }
+  .name-left { flex: 1; min-width: 0; }
+  .name-badge { font-size: 10px; font-weight: 600; color: var(--hint); background: #e8e8e4; border-radius: 4px; padding: 2px 7px; display: inline-block; margin-bottom: 5px; }
+  .name-text { font-size: 14px; line-height: 1.4; word-break: keep-all; }
+  .name-right { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+  .char-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+  .char-ok   { background: var(--success-bg); color: var(--success); }
+  .char-over { background: var(--danger-bg);  color: var(--danger);  }
+
   .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-  .tag { background: #f1f1ee; border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; cursor: pointer; transition: background 0.1s; }
-  .tag:hover { background: var(--border); }
+  .tag { background: #f1f1ee; border: 1px solid var(--border); border-radius: 20px; padding: 6px 13px; font-size: 13px; cursor: pointer; transition: background 0.12s; user-select: none; }
+  .tag:hover { background: #e8e8e4; }
   .tag.copied { background: var(--success-bg); border-color: #bbf7d0; color: var(--success); }
-  .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 14px; font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
-  .notice-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .notice-table tr { border-bottom: 1px solid var(--border); }
-  .notice-table tr:last-child { border-bottom: none; }
-  .notice-table td { padding: 9px 12px; vertical-align: top; }
-  .notice-table td:first-child { color: var(--muted); font-weight: 500; white-space: nowrap; width: 140px; background: var(--bg); border-right: 1px solid var(--border); }
-  .notice-table td:last-child { color: var(--text); }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-  @media (max-width: 520px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
+  .tag-hint { font-size: 12px; color: var(--hint); margin-bottom: 8px; }
+
+  .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
+
+  .copy-btn { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .copy-btn:hover { background: var(--bg); }
+  .copy-btn.copied { color: var(--success); border-color: #bbf7d0; background: var(--success-bg); }
+
+  @media (max-width: 540px) {
+    .form-grid { grid-template-columns: 1fr; gap: 12px; }
+    .topbar { padding: 0 1rem; }
+  }
 </style>
 </head>
 <body>
@@ -104,19 +115,21 @@
 </div>
 
 <div class="main">
+
   <div id="upgradeBanner" style="display:none" class="upgrade-banner">
     <div>
       <p>오늘 무료 사용 횟수(3회)를 모두 사용했습니다</p>
-      <span>Pro 플랜으로 업그레이드하면 무제한 사용 가능해요</span>
+      <small>Pro 플랜으로 업그레이드하면 무제한 사용 가능해요</small>
     </div>
     <button class="upgrade-btn" onclick="alert('결제 페이지 준비 중입니다!')">업그레이드 →</button>
   </div>
 
   <div class="card">
     <div class="card-title">상품 정보 입력</div>
-    <div class="grid-2" style="margin-bottom:12px">
+
+    <div class="form-grid">
       <div class="field">
-        <label>상품명 (간단히)</label>
+        <label>상품명</label>
         <input type="text" id="productName" placeholder="예: 스테인리스 텀블러 500ml">
       </div>
       <div class="field">
@@ -124,7 +137,8 @@
         <input type="text" id="price" placeholder="예: 18,000원">
       </div>
     </div>
-    <div class="grid-2">
+
+    <div class="form-grid">
       <div class="field">
         <label>주요 특징 (2~3가지)</label>
         <textarea id="features" placeholder="예: 이중 진공 단열, 12시간 보온/보냉, 누수방지"></textarea>
@@ -134,13 +148,14 @@
         <textarea id="target" placeholder="예: 직장인 출퇴근, 운동, 캠핑, 선물용"></textarea>
       </div>
     </div>
-    <div class="grid-3">
+
+    <div class="form-grid" style="margin-bottom:0">
       <div class="field">
-        <label>제조자/브랜드 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
-        <input type="text" id="manufacturer" placeholder="예: 삼성, OEM, 자체브랜드">
+        <label>제조자/브랜드 <span class="opt">(선택)</span></label>
+        <input type="text" id="manufacturer" placeholder="예: 삼성, 자체브랜드, OEM">
       </div>
       <div class="field">
-        <label>원산지 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
+        <label>원산지 <span class="opt">(선택)</span></label>
         <select id="origin">
           <option value="">선택 안 함</option>
           <option value="국내산">국내산</option>
@@ -150,13 +165,10 @@
           <option value="기타 수입산">기타 수입산</option>
         </select>
       </div>
-      <div class="field">
-        <label>A/S 연락처 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
-        <input type="text" id="asContact" placeholder="예: 010-1234-5678">
-      </div>
     </div>
-    <div class="btn-row">
-      <button class="btn" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
+
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn-primary" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
       <button class="btn-reset" id="resetBtn" onclick="resetForm()">새 상품 입력</button>
     </div>
   </div>
@@ -166,7 +178,7 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
   const FREE_LIMIT = 3;
   let usageCount = 0;
 
@@ -204,7 +216,7 @@
       badge.className = 'usage-badge u-ok';
       btn.disabled = false; banner.style.display = 'none';
     } else if (remaining === 1) {
-      badge.textContent = `오늘 ${remaining}회 남음`;
+      badge.textContent = '오늘 1회 남음';
       badge.className = 'usage-badge u-low';
       btn.disabled = false; banner.style.display = 'none';
     } else {
@@ -217,13 +229,10 @@
   function handleLogout() { localStorage.clear(); window.location.href = '/login.html'; }
 
   function resetForm() {
-    document.getElementById('productName').value = '';
-    document.getElementById('price').value = '';
-    document.getElementById('features').value = '';
-    document.getElementById('target').value = '';
-    document.getElementById('manufacturer').value = '';
+    ['productName','price','features','target','manufacturer'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
     document.getElementById('origin').value = '';
-    document.getElementById('asContact').value = '';
     document.getElementById('resultArea').innerHTML = '';
     document.getElementById('resetBtn').style.display = 'none';
     document.getElementById('productName').focus();
@@ -231,9 +240,9 @@
 
   function copyText(text, btn) {
     navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = '복사됨 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+      const orig = btn.textContent;
+      btn.textContent = '복사됨 ✓'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
     });
   }
 
@@ -244,27 +253,17 @@
     });
   }
 
-  function copyAllTags(tags, btn) {
-    navigator.clipboard.writeText(tags.join(' ')).then(() => {
-      btn.textContent = '복사됨 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '전체 복사'; btn.classList.remove('copied'); }, 2000);
-    });
-  }
-
   async function runGenerate() {
-    const productName = document.getElementById('productName').value.trim();
-    const price = document.getElementById('price').value.trim();
-    const features = document.getElementById('features').value.trim();
-    const target = document.getElementById('target').value.trim();
-    const manufacturer = document.getElementById('manufacturer').value.trim();
-    const origin = document.getElementById('origin').value;
-    const asContact = document.getElementById('asContact').value.trim();
+    const productName   = document.getElementById('productName').value.trim();
+    const price         = document.getElementById('price').value.trim();
+    const features      = document.getElementById('features').value.trim();
+    const target        = document.getElementById('target').value.trim();
+    const manufacturer  = document.getElementById('manufacturer').value.trim();
+    const origin        = document.getElementById('origin').value;
     if (!productName) { alert('상품명을 입력해주세요'); return; }
 
     const btn = document.getElementById('runBtn');
-    btn.disabled = true;
-    btn.textContent = '생성 중...';
+    btn.disabled = true; btn.textContent = '생성 중...';
     document.getElementById('resultArea').innerHTML =
       '<div class="loading"><span class="spinner"></span>Claude가 콘텐츠를 생성 중입니다...</div>';
 
@@ -272,36 +271,32 @@
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ productName, price, features, target, manufacturer, origin, asContact })
+        body: JSON.stringify({ productName, price, features, target, manufacturer, origin })
       });
-
       if (res.status === 401) { localStorage.clear(); window.location.href = '/login.html'; return; }
       if (res.status === 429) { usageCount = FREE_LIMIT; updateUI(); throw new Error('오늘 무료 사용 횟수(3회)를 모두 사용했습니다'); }
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || `오류 (${res.status})`); }
 
       const data = await res.json();
-      usageCount++;
-      updateUI();
-      renderResult(data);
+      usageCount++; updateUI(); renderResult(data);
       document.getElementById('resetBtn').style.display = 'block';
-
     } catch (err) {
       document.getElementById('resultArea').innerHTML = `<div class="error-box">오류: ${err.message}</div>`;
     } finally {
-      if (usageCount < FREE_LIMIT) { btn.disabled = false; }
+      if (usageCount < FREE_LIMIT) btn.disabled = false;
       btn.textContent = '상품 등록 콘텐츠 생성하기 →';
     }
   }
 
   function renderResult(data) {
-    const names = data.product_names || [];
-    const tags = data.tags || [];
-    const desc = data.description || '';
-    const notice = data.notice || {};
+    const names  = data.product_names || [];
+    const tags   = data.tags || [];
+    const desc   = data.description || '';
     const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
 
     const namesHtml = names.map((n, i) => {
       const len = n.length;
+      const safe = n.replace(/'/g, "\\'");
       return `<div class="name-item">
         <div class="name-left">
           <span class="name-badge">${labels[i]||''}</span>
@@ -309,7 +304,7 @@
         </div>
         <div class="name-right">
           <span class="char-badge ${len<=40?'char-ok':'char-over'}">${len}자</span>
-          <button class="copy-btn" onclick="copyText('${n.replace(/'/g,"\\'")}', this)">복사</button>
+          <button class="copy-btn" onclick="copyText('${safe}',this)">복사</button>
         </div>
       </div>`;
     }).join('');
@@ -318,20 +313,7 @@
       `<span class="tag" onclick="copyTag(this,'${t}')">${t}</span>`
     ).join('');
 
-    const noticeLabels = {
-      '품명및모델명':'품명 및 모델명','크기및용량':'크기/용량',
-      '소재및재질':'소재/재질','제조자':'제조자','수입여부':'수입 여부',
-      '품질보증기준':'품질보증기준','AS책임자':'A/S 책임자'
-    };
-    const noticeHtml = Object.entries(notice).map(([k, v]) => {
-      const label = noticeLabels[k] || k;
-      const safeV = v.replace(/'/g, "\\'");
-      return `<div class="notice-row">
-        <span class="notice-key">${label}</span>
-        <span class="notice-val">${v}</span>
-        <button class="notice-copy" onclick="copyNoticeItem('${safeV}', this)">복사</button>
-      </div>`;
-    }).join('');
+    const safeDesc = desc.replace(/'/g, "\\'");
 
     document.getElementById('resultArea').innerHTML = `
       <div class="card">
@@ -345,36 +327,20 @@
         <div class="section-block">
           <div class="block-header">
             <div class="block-label">검색 태그 ${tags.length}개</div>
-            <button class="copy-all-btn" onclick="copyAllTags(${JSON.stringify(tags)}, this)">전체 복사</button>
+            <button class="copy-btn" onclick="copyText('${tags.join(' ')}',this)">전체 복사</button>
           </div>
-          <div style="margin-bottom:6px;font-size:12px;color:var(--muted)">태그 클릭 시 개별 복사</div>
+          <p class="tag-hint">태그 클릭 시 개별 복사</p>
           <div class="tags-wrap">${tagsHtml}</div>
         </div>
         <div class="divider"></div>
         <div class="section-block">
           <div class="block-header">
             <div class="block-label">상세 설명문 (${desc.length}자)</div>
-            <button class="copy-all-btn" onclick="copyText(document.querySelector('.desc-box').textContent, this)">복사</button>
+            <button class="copy-btn" onclick="copyText('${safeDesc}',this)">복사</button>
           </div>
           <div class="desc-box">${desc}</div>
         </div>
-        <div class="divider"></div>
-        <div class="section-block">
-          <div class="block-header">
-            <div class="block-label">상품 정보 제공고시</div>
-          </div>
-          <div class="notice-guide">각 항목 옆 복사 버튼을 눌러 스마트스토어에 직접 입력하세요. 제조자·원산지·A/S 연락처는 실제 정보를 확인 후 사용하세요.</div>
-          <div style="border:1px solid var(--border);border-radius:7px;overflow:hidden" id="noticeList">${noticeHtml}</div>
-        </div>
       </div>`;
-  }
-
-  function copyNoticeItem(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = '복사됨 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
-    });
   }
 
   loadUser();
