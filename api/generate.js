@@ -5,6 +5,10 @@ export default async function handler(req, res) {
 
   const { productName, price, features, target } = req.body;
 
+  if (!productName) {
+    return res.status(400).json({ error: '상품명을 입력해주세요' });
+  }
+
   const SYSTEM_PROMPT = `당신은 네이버 스마트스토어 및 쿠팡 셀러 전문 카피라이터입니다.
 
 셀러가 입력한 상품 정보를 바탕으로 네이버 쇼핑 SEO에 최적화된 상품명, 검색 태그, 상세 설명문을 생성합니다.
@@ -43,21 +47,41 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+        max_tokens: 2048,
         system: SYSTEM_PROMPT,
         messages: [{
           role: 'user',
-          content: `상품명: ${productName}\n가격: ${price}\n주요 특징: ${features}\n타겟/상황: ${target}`
+          content: `상품명: ${productName}\n가격: ${price || '미입력'}\n주요 특징: ${features || '미입력'}\n타겟/상황: ${target || '미입력'}`
         }]
       })
     });
 
     const data = await response.json();
-    const raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(raw);
-    res.status(200).json(parsed);
+
+    if (!response.ok) {
+      const errMsg = data?.error?.message || `Anthropic API 오류 (${response.status})`;
+      return res.status(500).json({ error: errMsg });
+    }
+
+    const rawText = data.content?.[0]?.text || '';
+
+    const cleaned = rawText.replace(/```json|```/gi, '').trim();
+    const jsonStart = cleaned.indexOf('{');
+    const jsonEnd = cleaned.lastIndexOf('}');
+
+    if (jsonStart === -1 || jsonEnd === -1) {
+      return res.status(500).json({
+        error: 'JSON을 찾을 수 없습니다. 다시 시도해주세요.',
+        raw: rawText.substring(0, 200)
+      });
+    }
+
+    const jsonStr = cleaned.substring(jsonStart, jsonEnd + 1);
+    const parsed = JSON.parse(jsonStr);
+
+    return res.status(200).json(parsed);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
