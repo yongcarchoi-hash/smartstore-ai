@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     if (total >= 3) return res.status(429).json({ error: '오늘 무료 사용 횟수(3회)를 모두 사용했습니다' });
   }
 
-  const { productName, price, features, target } = req.body;
+  const { productName, price, features, target, manufacturer, origin, asContact } = req.body;
   if (!productName) return res.status(400).json({ error: '상품명을 입력해주세요' });
 
   const SYSTEM_PROMPT = `당신은 네이버 스마트스토어 및 쿠팡 셀러 전문 카피라이터입니다.
@@ -63,10 +63,13 @@ export default async function handler(req, res) {
 - 사이즈/용량/소재 반드시 포함
 
 [상품 정보 제공고시 규칙]
-- notice 객체의 각 항목을 입력된 상품 정보 기반으로 최대한 구체적으로 작성
-- 품명및모델명: 실제 상품명 기반으로 작성
-- 크기및용량: 입력된 정보에서 추출, 없으면 "상세페이지 참조"
-- 소재및재질: 입력된 정보에서 추출, 없으면 "상세페이지 참조"`;
+- 품명및모델명: 상품명 기반으로 구체적으로 작성
+- 크기및용량: 특징에서 추출, 없으면 "상세페이지 참조"
+- 소재및재질: 특징에서 추출, 없으면 "상세페이지 참조"
+- 제조자: 입력된 제조자/브랜드 사용, 없으면 "판매자 문의"
+- 수입여부: 입력된 원산지 사용, 없으면 "국내산"
+- 품질보증기준: "제품 이상 시 교환/환불"
+- AS책임자: 입력된 A/S 연락처 사용, 없으면 "판매자 고객센터 문의""`;
 
   try {
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -82,7 +85,7 @@ export default async function handler(req, res) {
         system: SYSTEM_PROMPT,
         messages: [{
           role: 'user',
-          content: `상품명: ${productName}\n가격: ${price || '미입력'}\n주요 특징: ${features || '미입력'}\n타겟/상황: ${target || '미입력'}`
+          content: `상품명: ${productName}\n가격: ${price || '미입력'}\n주요 특징: ${features || '미입력'}\n타겟/상황: ${target || '미입력'}\n제조자/브랜드: ${manufacturer || '미입력'}\n원산지: ${origin || '미입력'}\nA/S 연락처: ${asContact || '미입력'}`
         }]
       })
     });
