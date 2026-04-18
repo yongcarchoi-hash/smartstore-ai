@@ -33,9 +33,12 @@
   input[type="text"], textarea { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; transition: border-color 0.15s; resize: none; }
   input:focus, textarea:focus { border-color: var(--accent); }
   textarea { min-height: 80px; line-height: 1.5; }
-  .btn { width: 100%; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; margin-top: 14px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn { flex: 1; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.85; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-reset { flex: 0 0 auto; padding: 11px 18px; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; }
+  .btn-reset:hover { background: var(--border); }
   .upgrade-banner { background: #eff4ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
   .upgrade-banner p { font-size: 13px; color: var(--accent); font-weight: 500; }
   .upgrade-banner span { font-size: 12px; color: var(--muted); margin-top: 2px; display: block; }
@@ -46,16 +49,34 @@
   .error-box { background: var(--danger-bg); border: 1px solid #fecaca; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: var(--danger); }
   .section-block { margin-bottom: 16px; }
   .section-block:last-child { margin-bottom: 0; }
-  .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--hint); margin-bottom: 8px; }
+  .block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--hint); }
+  .copy-all-btn { font-size: 11px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; }
+  .copy-all-btn:hover { background: var(--border); }
+  .copy-all-btn.copied { color: var(--success); border-color: var(--success); background: var(--success-bg); }
   .name-item { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .name-item:last-child { margin-bottom: 0; }
+  .name-left { flex: 1; }
   .name-badge { font-size: 10px; font-weight: 600; color: var(--hint); background: var(--border); border-radius: 4px; padding: 2px 6px; white-space: nowrap; margin-bottom: 5px; display: inline-block; }
   .name-text { font-size: 14px; line-height: 1.4; }
+  .name-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .char-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
   .char-ok { background: var(--success-bg); color: var(--success); }
   .char-over { background: var(--danger-bg); color: var(--danger); }
+  .copy-btn { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .copy-btn:hover { background: var(--bg); }
+  .copy-btn.copied { color: var(--success); border-color: var(--success); }
   .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-  .tag { background: #f1f1ee; border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; }
+  .tag { background: #f1f1ee; border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; cursor: pointer; transition: background 0.1s; }
+  .tag:hover { background: var(--border); }
+  .tag.copied { background: var(--success-bg); border-color: #bbf7d0; color: var(--success); }
   .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 14px; font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
+  .notice-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .notice-table tr { border-bottom: 1px solid var(--border); }
+  .notice-table tr:last-child { border-bottom: none; }
+  .notice-table td { padding: 9px 12px; vertical-align: top; }
+  .notice-table td:first-child { color: var(--muted); font-weight: 500; white-space: nowrap; width: 140px; background: var(--bg); border-right: 1px solid var(--border); }
+  .notice-table td:last-child { color: var(--text); }
   .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
   @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
 </style>
@@ -102,7 +123,10 @@
         <textarea id="target" placeholder="예: 직장인 출퇴근, 운동, 캠핑, 선물용"></textarea>
       </div>
     </div>
-    <button class="btn" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
+    <div class="btn-row">
+      <button class="btn" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
+      <button class="btn-reset" id="resetBtn" onclick="resetForm()">새 상품 입력</button>
+    </div>
   </div>
 
   <div id="resultArea"></div>
@@ -110,15 +134,13 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
   const FREE_LIMIT = 3;
   let usageCount = 0;
 
-  // 로그인 체크
   const token = localStorage.getItem('sb_token');
   if (!token) window.location.href = '/login.html';
 
-  // 이메일 표시
   async function loadUser() {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY }
@@ -148,20 +170,51 @@
     if (remaining > 1) {
       badge.textContent = `오늘 ${remaining}회 남음`;
       badge.className = 'usage-badge u-ok';
+      btn.disabled = false; banner.style.display = 'none';
     } else if (remaining === 1) {
       badge.textContent = `오늘 ${remaining}회 남음`;
       badge.className = 'usage-badge u-low';
+      btn.disabled = false; banner.style.display = 'none';
     } else {
       badge.textContent = '오늘 횟수 소진';
       badge.className = 'usage-badge u-empty';
-      banner.style.display = 'flex';
-      btn.disabled = true;
+      btn.disabled = true; banner.style.display = 'flex';
     }
   }
 
-  function handleLogout() {
-    localStorage.clear();
-    window.location.href = '/login.html';
+  function handleLogout() { localStorage.clear(); window.location.href = '/login.html'; }
+
+  function resetForm() {
+    document.getElementById('productName').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('features').value = '';
+    document.getElementById('target').value = '';
+    document.getElementById('resultArea').innerHTML = '';
+    document.getElementById('resetBtn').style.display = 'none';
+    document.getElementById('productName').focus();
+  }
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyTag(el, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 1500);
+    });
+  }
+
+  function copyAllTags(tags, btn) {
+    navigator.clipboard.writeText(tags.join(' ')).then(() => {
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '전체 복사'; btn.classList.remove('copied'); }, 2000);
+    });
   }
 
   async function runGenerate() {
@@ -180,10 +233,7 @@
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ productName, price, features, target })
       });
 
@@ -195,10 +245,13 @@
       usageCount++;
       updateUI();
       renderResult(data);
+      document.getElementById('resetBtn').style.display = 'block';
+
     } catch (err) {
       document.getElementById('resultArea').innerHTML = `<div class="error-box">오류: ${err.message}</div>`;
     } finally {
-      if (usageCount < FREE_LIMIT) { btn.disabled = false; btn.textContent = '상품 등록 콘텐츠 생성하기 →'; }
+      if (usageCount < FREE_LIMIT) { btn.disabled = false; }
+      btn.textContent = '상품 등록 콘텐츠 생성하기 →';
     }
   }
 
@@ -206,19 +259,81 @@
     const names = data.product_names || [];
     const tags = data.tags || [];
     const desc = data.description || '';
+    const notice = data.notice || {};
     const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
+
     const namesHtml = names.map((n, i) => {
       const len = n.length;
-      return `<div class="name-item"><div style="flex:1"><span class="name-badge">${labels[i]||''}</span><div class="name-text">${n}</div></div><span class="char-badge ${len<=40?'char-ok':'char-over'}">${len}자</span></div>`;
+      return `<div class="name-item">
+        <div class="name-left">
+          <span class="name-badge">${labels[i]||''}</span>
+          <div class="name-text">${n}</div>
+        </div>
+        <div class="name-right">
+          <span class="char-badge ${len<=40?'char-ok':'char-over'}">${len}자</span>
+          <button class="copy-btn" onclick="copyText('${n.replace(/'/g,"\\'")}', this)">복사</button>
+        </div>
+      </div>`;
     }).join('');
+
+    const tagsHtml = tags.map(t =>
+      `<span class="tag" onclick="copyTag(this,'${t}')">${t}</span>`
+    ).join('');
+
+    const noticeHtml = Object.entries(notice).map(([k, v]) => {
+      const label = {
+        '품명및모델명':'품명 및 모델명','크기및용량':'크기/용량',
+        '소재및재질':'소재/재질','제조자':'제조자','수입여부':'수입 여부',
+        '품질보증기준':'품질보증기준','AS책임자':'A/S 책임자'
+      }[k] || k;
+      return `<tr><td>${label}</td><td>${v}</td></tr>`;
+    }).join('');
+
     document.getElementById('resultArea').innerHTML = `
       <div class="card">
-        <div class="section-block"><div class="block-label">상품명 3가지 버전</div>${namesHtml}</div>
+        <div class="section-block">
+          <div class="block-header">
+            <div class="block-label">상품명 3가지 버전</div>
+          </div>
+          ${namesHtml}
+        </div>
         <div class="divider"></div>
-        <div class="section-block"><div class="block-label">검색 태그 ${tags.length}개</div><div class="tags-wrap">${tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>
+        <div class="section-block">
+          <div class="block-header">
+            <div class="block-label">검색 태그 ${tags.length}개</div>
+            <button class="copy-all-btn" onclick="copyAllTags(${JSON.stringify(tags)}, this)">전체 복사</button>
+          </div>
+          <div style="margin-bottom:6px;font-size:12px;color:var(--muted)">태그 클릭 시 개별 복사</div>
+          <div class="tags-wrap">${tagsHtml}</div>
+        </div>
         <div class="divider"></div>
-        <div class="section-block"><div class="block-label">상세 설명문 (${desc.length}자)</div><div class="desc-box">${desc}</div></div>
+        <div class="section-block">
+          <div class="block-header">
+            <div class="block-label">상세 설명문 (${desc.length}자)</div>
+            <button class="copy-all-btn" onclick="copyText(document.querySelector('.desc-box').textContent, this)">복사</button>
+          </div>
+          <div class="desc-box">${desc}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-block">
+          <div class="block-header">
+            <div class="block-label">상품 정보 제공고시</div>
+            <button class="copy-all-btn" onclick="copyNotice()">전체 복사</button>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:7px;overflow:hidden">
+            <table class="notice-table" id="noticeTable">${noticeHtml}</table>
+          </div>
+        </div>
       </div>`;
+  }
+
+  function copyNotice() {
+    const rows = document.querySelectorAll('.notice-table tr');
+    const text = Array.from(rows).map(r => {
+      const cells = r.querySelectorAll('td');
+      return cells.length >= 2 ? `${cells[0].textContent}: ${cells[1].textContent}` : '';
+    }).filter(Boolean).join('\n');
+    navigator.clipboard.writeText(text);
   }
 
   loadUser();
