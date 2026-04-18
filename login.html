@@ -67,12 +67,18 @@
     if (data.session) window.location.href = '/';
   });
 
-  function switchTab(tab) {
+ function switchTab(tab) {
     mode = tab;
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+    document.querySelectorAll('.tab').forEach((t) => {
+      t.classList.remove('active');
     });
-    document.getElementById('submitBtn').textContent = tab === 'login' ? '로그인' : '회원가입';
+    if (tab === 'login') {
+      document.querySelectorAll('.tab')[0].classList.add('active');
+      document.getElementById('submitBtn').textContent = '로그인';
+    } else {
+      document.querySelectorAll('.tab')[1].classList.add('active');
+      document.getElementById('submitBtn').textContent = '회원가입';
+    }
     document.getElementById('msg').className = 'msg';
   }
 
