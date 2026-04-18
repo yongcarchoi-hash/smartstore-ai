@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스마트스토어 AI 상품 등록 생성기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e4e4e0;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6b68;
+    --text-muted: #9b9b98;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --tag-bg: #f1f1ee;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .header { margin-bottom: 2rem; }
+  .header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+  .header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+  input[type="text"], textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 11px;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+  textarea { min-height: 80px; line-height: 1.5; }
+
+  .btn {
+    width: 100%;
+    padding: 11px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--surface);
+    background: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-top: 14px;
+    letter-spacing: -0.2px;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--text-primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: var(--danger-light);
+    border: 1px solid #fecaca;
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--danger);
+  }
+
+  .section-block {
+    margin-bottom: 16px;
+  }
+  .section-block:last-child { margin-bottom: 0; }
+
+  .block-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .name-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .name-item:last-child { margin-bottom: 0; }
+  .name-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+  .name-text { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+  .char-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .char-ok { background: var(--success-light); color: var(--success); }
+  .char-over { background: var(--danger-light); color: var(--danger); }
+
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  .desc-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.75;
+    white-space: pre-wrap;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  .prompt-toggle {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+    user-select: none;
+  }
+  .prompt-body {
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: monospace;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    line-height: 1.65;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 4px;
+  }
+
+  @media (max-width: 520px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>스마트스토어 AI 상품 등록 생성기</h1>
+    <p>상품 정보를 입력하면 네이버 SEO 최적화 상품명·태그·설명문을 즉시 생성합니다</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">핵심 프롬프트 설계</div>
+    <div class="prompt-toggle" onclick="togglePrompt()">
+      <span id="toggleArrow">▶</span> 시스템 프롬프트 전문 보기
+    </div>
+    <div class="prompt-body" id="promptBody">당신은 네이버 스마트스토어 및 쿠팡 셀러 전문 카피라이터입니다.
+
+셀러가 입력한 상품 정보를 바탕으로 네이버 쇼핑 SEO에 최적화된
+상품명 3가지, 검색 태그 10개, 상세 설명문을 생성합니다.
+
+[출력 형식] 반드시 순수 JSON만 출력. 마크다운/코드블록/추가설명 금지.
+{"product_names":["버전1","버전2","버전3"],"tags":["태그1",...,"태그10"],"description":"설명문"}
+
+[상품명 규칙]
+- 40자 이내 (공백 포함)
+- 버전1: 핵심 검색 키워드 앞배치 (SEO 최적화형)
+- 버전2: 타겟 고객/상황 앞배치 (타겟형)
+- 버전3: 핵심 혜택/특징 앞배치 (혜택 강조형)
+- 특수문자 최소화, 중복 키워드 금지
+
+[태그 규칙]
+- 정확히 10개 / 2~4단어 복합키워드 우선
+- 소비자 실제 검색 패턴 반영
+- 다양한 사용 상황/속성/용도 커버
+
+[설명문 규칙 — 생활용품 특화]
+- 150~250자 / 이모지 1~2개
+- 첫 문장: 핵심 구매 이유 (가치 제안)
+- 중간: 주요 특징 3~4가지 (수치/소재/용량 포함)
+- 마무리: 구매 유도 문구
+- 사이즈/용량/소재 반드시 포함</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">상품 정보 입력</div>
+    <div class="grid-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>상품명 (간단히)</label>
+        <input type="text" id="productName" value="스테인리스 텀블러 500ml" placeholder="예: 실리콘 주방 스펀지">
+      </div>
+      <div class="field">
+        <label>가격대</label>
+        <input type="text" id="price" value="18,000원" placeholder="예: 12,000원">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>주요 특징 (2~3가지)</label>
+        <textarea id="features" placeholder="예: 이중 진공 단열, 12시간 보온/보냉">이중 진공 단열, 12시간 보온보냉, 누수방지 뚜껑, 식품안전 스테인리스 소재</textarea>
+      </div>
+      <div class="field">
+        <label>타겟 고객 / 사용 상황</label>
+        <textarea id="target" placeholder="예: 직장인, 캠핑, 운동할 때">직장인 출퇴근, 운동, 캠핑, 선물용으로 적합</textarea>
+      </div>
+    </div>
+    <button class="btn" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
+  </div>
+
+  <div id="resultArea"></div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `당신은 네이버 스마트스토어 및 쿠팡 셀러 전문 카피라이터입니다.
+
+셀러가 입력한 상품 정보를 바탕으로 네이버 쇼핑 SEO에 최적화된 상품명, 검색 태그, 상세 설명문을 생성합니다.
+
+반드시 아래 JSON 형식으로만 응답하세요. 마크다운, 코드블록, 추가 설명 일절 금지.
+{"product_names":["버전1","버전2","버전3"],"tags":["태그1","태그2","태그3","태그4","태그5","태그6","태그7","태그8","태그9","태그10"],"description":"설명문"}
+
+[상품명 규칙]
+- 40자 이내 (공백 포함)
+- 버전1: 핵심 검색 키워드 앞배치 (SEO 최적화형)
+- 버전2: 타겟 고객/상황 앞배치 (타겟형)
+- 버전3: 핵심 혜택/특징 앞배치 (혜택 강조형)
+- 특수문자 최소화, 중복 키워드 금지
+
+[태그 규칙]
+- 정확히 10개
+- 2~4단어 복합키워드 우선
+- 소비자 실제 검색 패턴 반영
+- 다양한 사용 상황/속성/용도 커버
+
+[설명문 규칙 — 생활용품 특화]
+- 150~250자
+- 첫 문장: 핵심 구매 이유
+- 중간: 주요 특징 3~4가지 (수치/소재/용량 포함)
+- 마무리: 구매 유도 문구
+- 혜택 중심 서술, 이모지 1~2개
+- 사이즈/용량/소재 반드시 포함`;
+
+function togglePrompt() {
+  const body = document.getElementById('promptBody');
+  const arrow = document.getElementById('toggleArrow');
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▶' : '▼';
+}
+
+async function runGenerate() {
+  const name = document.getElementById('productName').value.trim();
+  const price = document.getElementById('price').value.trim();
+  const features = document.getElementById('features').value.trim();
+  const target = document.getElementById('target').value.trim();
+  if (!name) return;
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = '생성 중...';
+
+  document.getElementById('resultArea').innerHTML =
+    '<div class="loading"><span class="spinner"></span>Claude가 콘텐츠를 생성 중입니다...</div>';
+
+  const userMsg = `상품명: ${name}\n가격: ${price}\n주요 특징: ${features}\n타겟/상황: ${target}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `서버 오류 (HTTP ${res.status})`);
+    }
+
+    const data = await res.json();
+    const raw = (data.content?.[0]?.text || '').replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(raw);
+    renderResult(parsed);
+
+  } catch (err) {
+    document.getElementById('resultArea').innerHTML =
+      `<div class="error-box">오류: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '상품 등록 콘텐츠 생성하기 →';
+  }
+}
+
+function renderResult(data) {
+  const names = data.product_names || [];
+  const tags = data.tags || [];
+  const desc = data.description || '';
+  const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
+
+  const namesHtml = names.map((n, i) => {
+    const len = n.length;
+    const ok = len <= 40;
+    return `<div class="name-item">
+      <div style="flex:1">
+        <span class="name-badge">${labels[i] || ''}</span>
+        <div class="name-text">${n}</div>
+      </div>
+      <span class="char-badge ${ok ? 'char-ok' : 'char-over'}">${len}자</span>
+    </div>`;
+  }).join('');
+
+  const tagsHtml = tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="card">
+      <div class="section-block">
+        <div class="block-label">상품명 3가지 버전</div>
+        ${namesHtml}
+      </div>
+      <div class="divider"></div>
+      <div class="section-block">
+        <div class="block-label">검색 태그 ${tags.length}개</div>
+        <div class="tags-wrap">${tagsHtml}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-block">
+        <div class="block-label">상세 설명문 (${desc.length}자)</div>
+        <div class="desc-box">${desc}</div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
