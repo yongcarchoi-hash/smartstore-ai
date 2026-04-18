@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 — 스마트스토어 AI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f7f5; --surface: #fff; --border: #e4e4e0;
+    --text: #1a1a18; --muted: #6b6b68; --hint: #9b9b98;
+    --accent: #2563eb; --danger: #dc2626; --danger-bg: #fef2f2;
+    --radius: 10px;
+  }
+  body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; width: 100%; max-width: 400px; }
+  .logo { text-align: center; margin-bottom: 1.75rem; }
+  .logo h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .logo p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .tabs { display: flex; border: 1px solid var(--border); border-radius: var(--radius); padding: 3px; margin-bottom: 1.5rem; gap: 3px; }
+  .tab { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; text-align: center; border-radius: 7px; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: inherit; transition: all 0.15s; }
+  .tab.active { background: var(--text); color: #fff; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+  input[type="email"], input[type="password"] { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; outline: none; transition: border-color 0.15s; }
+  input:focus { border-color: var(--accent); }
+  .btn { width: 100%; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: var(--radius); cursor: pointer; margin-top: 4px; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .msg { font-size: 13px; padding: 10px 12px; border-radius: 7px; margin-top: 12px; display: none; }
+  .msg.error { background: var(--danger-bg); color: var(--danger); display: block; }
+  .msg.success { background: #f0fdf4; color: #16a34a; display: block; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <h1>스마트스토어 AI</h1>
+    <p>네이버 SEO 최적화 상품 등록 생성기</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('login')">로그인</button>
+    <button class="tab" onclick="switchTab('signup')">회원가입</button>
+  </div>
+  <div class="field">
+    <label>이메일</label>
+    <input type="email" id="email" placeholder="example@email.com">
+  </div>
+  <div class="field">
+    <label>비밀번호</label>
+    <input type="password" id="password" placeholder="8자 이상">
+  </div>
+  <button class="btn" id="submitBtn" onclick="handleSubmit()">로그인</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let mode = 'login';
+
+  // 이미 로그인 상태면 메인으로
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) window.location.href = '/';
+  });
+
+  function switchTab(tab) {
+    mode = tab;
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'signup'));
+    });
+    document.getElementById('submitBtn').textContent = tab === 'login' ? '로그인' : '회원가입';
+    document.getElementById('msg').className = 'msg';
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  async function handleSubmit() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submitBtn');
+
+    if (!email || !password) { showMsg('이메일과 비밀번호를 입력해주세요', 'error'); return; }
+    if (password.length < 8) { showMsg('비밀번호는 8자 이상이어야 합니다', 'error'); return; }
+
+    btn.disabled = true;
+    btn.textContent = '처리 중...';
+
+    if (mode === 'signup') {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) { showMsg(error.message, 'error'); }
+      else { showMsg('가입 완료! 이메일을 확인하거나 바로 로그인해보세요.', 'success'); }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { showMsg('이메일 또는 비밀번호가 올바르지 않습니다', 'error'); }
+      else { window.location.href = '/'; }
+    }
+
+    btn.disabled = false;
+    btn.textContent = mode === 'login' ? '로그인' : '회원가입';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubmit(); });
+</script>
+</body>
+</html>

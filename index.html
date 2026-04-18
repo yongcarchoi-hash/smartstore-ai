@@ -4,67 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>스마트스토어 AI 상품 등록 생성기</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f7f5;
-    --surface: #ffffff;
-    --border: #e4e4e0;
-    --text-primary: #1a1a18;
-    --text-secondary: #6b6b68;
-    --text-muted: #9b9b98;
-    --accent: #2563eb;
-    --success: #16a34a;
-    --success-light: #f0fdf4;
-    --danger: #dc2626;
-    --danger-light: #fef2f2;
-    --tag-bg: #f1f1ee;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    --bg: #f7f7f5; --surface: #fff; --border: #e4e4e0;
+    --text: #1a1a18; --muted: #6b6b68; --hint: #9b9b98;
+    --accent: #2563eb; --accent-bg: #eff4ff;
+    --success: #16a34a; --success-bg: #f0fdf4;
+    --danger: #dc2626; --danger-bg: #fef2f2;
+    --warning: #d97706; --warning-bg: #fffbeb;
+    --tag-bg: #f1f1ee; --radius: 10px;
   }
-  body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 2rem 1rem; }
-  .container { max-width: 720px; margin: 0 auto; }
-  .header { margin-bottom: 2rem; }
-  .header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
-  .header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 14px; }
-  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+  body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 0; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .topbar-left { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .usage-badge { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
+  .usage-ok { background: var(--success-bg); color: var(--success); }
+  .usage-low { background: var(--warning-bg); color: var(--warning); }
+  .usage-empty { background: var(--danger-bg); color: var(--danger); }
+  .user-email { font-size: 12px; color: var(--muted); }
+  .logout-btn { font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
+  .logout-btn:hover { background: var(--bg); }
+  .main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 14px; }
+  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 14px; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-  input[type="text"], textarea { width: 100%; font-family: inherit; font-size: 14px; color: var(--text-primary); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; outline: none; transition: border-color 0.15s; resize: none; }
-  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+  .field label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  input[type="text"], textarea { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; transition: border-color 0.15s; resize: none; }
+  input:focus, textarea:focus { border-color: var(--accent); }
   textarea { min-height: 80px; line-height: 1.5; }
-  .btn { width: 100%; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: var(--surface); background: var(--text-primary); border: none; border-radius: var(--radius-md); cursor: pointer; margin-top: 14px; letter-spacing: -0.2px; transition: opacity 0.15s; }
+  .btn { width: 100%; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: var(--radius); cursor: pointer; margin-top: 14px; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.85; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .loading { text-align: center; padding: 2.5rem; color: var(--text-secondary); font-size: 14px; }
-  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  .upgrade-banner { background: var(--accent-bg); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .upgrade-banner p { font-size: 13px; color: var(--accent); font-weight: 500; }
+  .upgrade-banner span { font-size: 12px; color: var(--muted); margin-top: 2px; display: block; }
+  .upgrade-btn { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 8px 14px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .loading { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 14px; }
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .error-box { background: var(--danger-light); border: 1px solid #fecaca; border-radius: var(--radius-md); padding: 12px 14px; font-size: 13px; color: var(--danger); }
+  .error-box { background: var(--danger-bg); border: 1px solid #fecaca; border-radius: var(--radius); padding: 12px 14px; font-size: 13px; color: var(--danger); }
   .section-block { margin-bottom: 16px; }
   .section-block:last-child { margin-bottom: 0; }
-  .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-  .name-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--hint); margin-bottom: 8px; }
+  .name-item { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .name-item:last-child { margin-bottom: 0; }
-  .name-badge { font-size: 10px; font-weight: 600; color: var(--text-muted); background: var(--border); border-radius: 4px; padding: 2px 6px; white-space: nowrap; margin-bottom: 5px; display: inline-block; }
-  .name-text { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+  .name-badge { font-size: 10px; font-weight: 600; color: var(--hint); background: var(--border); border-radius: 4px; padding: 2px 6px; white-space: nowrap; margin-bottom: 5px; display: inline-block; }
+  .name-text { font-size: 14px; line-height: 1.4; }
   .char-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; white-space: nowrap; margin-top: 2px; }
-  .char-ok { background: var(--success-light); color: var(--success); }
-  .char-over { background: var(--danger-light); color: var(--danger); }
+  .char-ok { background: var(--success-bg); color: var(--success); }
+  .char-over { background: var(--danger-bg); color: var(--danger); }
   .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-  .tag { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; color: var(--text-primary); }
-  .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-size: 14px; color: var(--text-primary); line-height: 1.75; white-space: pre-wrap; }
+  .tag { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; }
+  .desc-box { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 14px; font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
   .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-  @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>스마트스토어 AI 상품 등록 생성기</h1>
-    <p>상품 정보를 입력하면 네이버 SEO 최적화 상품명·태그·설명문을 즉시 생성합니다</p>
+
+<div class="topbar">
+  <div class="topbar-left">스마트스토어 AI</div>
+  <div class="topbar-right">
+    <span class="usage-badge" id="usageBadge"></span>
+    <span class="user-email" id="userEmail"></span>
+    <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="upgradeBanner" style="display:none" class="upgrade-banner">
+    <div>
+      <p>오늘 무료 사용 횟수(3회)를 모두 사용했습니다</p>
+      <span>Pro 플랜으로 업그레이드하면 무제한으로 사용할 수 있어요</span>
+    </div>
+    <button class="upgrade-btn" onclick="alert('결제 페이지 준비 중입니다!')">업그레이드 →</button>
   </div>
 
   <div class="card">
@@ -96,80 +113,150 @@
 </div>
 
 <script>
-async function runGenerate() {
-  const productName = document.getElementById('productName').value.trim();
-  const price = document.getElementById('price').value.trim();
-  const features = document.getElementById('features').value.trim();
-  const target = document.getElementById('target').value.trim();
-  if (!productName) { alert('상품명을 입력해주세요'); return; }
+  const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const btn = document.getElementById('runBtn');
-  btn.disabled = true;
-  btn.textContent = '생성 중...';
-  document.getElementById('resultArea').innerHTML =
-    '<div class="loading"><span class="spinner"></span>Claude가 콘텐츠를 생성 중입니다...</div>';
+  let currentSession = null;
+  let usageCount = 0;
+  const FREE_LIMIT = 3;
 
-  try {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productName, price, features, target })
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `서버 오류 (${res.status})`);
-    }
-
-    const data = await res.json();
-    renderResult(data);
-
-  } catch (err) {
-    document.getElementById('resultArea').innerHTML =
-      `<div class="error-box">오류: ${err.message}</div>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '상품 등록 콘텐츠 생성하기 →';
+  async function init() {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) { window.location.href = '/login.html'; return; }
+    currentSession = data.session;
+    document.getElementById('userEmail').textContent = data.session.user.email;
+    await loadUsage();
   }
-}
 
-function renderResult(data) {
-  const names = data.product_names || [];
-  const tags = data.tags || [];
-  const desc = data.description || '';
-  const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
+  async function loadUsage() {
+    const today = new Date().toISOString().split('T')[0];
+    const { count } = await supabase
+      .from('usage_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentSession.user.id)
+      .gte('created_at', today + 'T00:00:00')
+      .lte('created_at', today + 'T23:59:59');
 
-  const namesHtml = names.map((n, i) => {
-    const len = n.length;
-    return `<div class="name-item">
-      <div style="flex:1">
-        <span class="name-badge">${labels[i] || ''}</span>
-        <div class="name-text">${n}</div>
-      </div>
-      <span class="char-badge ${len <= 40 ? 'char-ok' : 'char-over'}">${len}자</span>
-    </div>`;
-  }).join('');
+    usageCount = count || 0;
+    updateUsageUI();
+  }
 
-  const tagsHtml = tags.map(t => `<span class="tag">${t}</span>`).join('');
+  function updateUsageUI() {
+    const badge = document.getElementById('usageBadge');
+    const remaining = FREE_LIMIT - usageCount;
+    const banner = document.getElementById('upgradeBanner');
+    const btn = document.getElementById('runBtn');
 
-  document.getElementById('resultArea').innerHTML = `
-    <div class="card">
-      <div class="section-block">
-        <div class="block-label">상품명 3가지 버전</div>
-        ${namesHtml}
-      </div>
-      <div class="divider"></div>
-      <div class="section-block">
-        <div class="block-label">검색 태그 ${tags.length}개</div>
-        <div class="tags-wrap">${tagsHtml}</div>
-      </div>
-      <div class="divider"></div>
-      <div class="section-block">
-        <div class="block-label">상세 설명문 (${desc.length}자)</div>
-        <div class="desc-box">${desc}</div>
-      </div>
-    </div>`;
-}
+    if (remaining > 1) {
+      badge.textContent = `오늘 ${remaining}회 남음`;
+      badge.className = 'usage-badge usage-ok';
+      banner.style.display = 'none';
+      btn.disabled = false;
+    } else if (remaining === 1) {
+      badge.textContent = `오늘 ${remaining}회 남음`;
+      badge.className = 'usage-badge usage-low';
+      banner.style.display = 'none';
+      btn.disabled = false;
+    } else {
+      badge.textContent = '오늘 횟수 소진';
+      badge.className = 'usage-badge usage-empty';
+      banner.style.display = 'flex';
+      btn.disabled = true;
+    }
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    window.location.href = '/login.html';
+  }
+
+  async function runGenerate() {
+    const productName = document.getElementById('productName').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const features = document.getElementById('features').value.trim();
+    const target = document.getElementById('target').value.trim();
+    if (!productName) { alert('상품명을 입력해주세요'); return; }
+
+    const btn = document.getElementById('runBtn');
+    btn.disabled = true;
+    btn.textContent = '생성 중...';
+    document.getElementById('resultArea').innerHTML =
+      '<div class="loading"><span class="spinner"></span>Claude가 콘텐츠를 생성 중입니다...</div>';
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ productName, price, features, target })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          await loadUsage();
+          throw new Error('오늘 무료 사용 횟수(3회)를 모두 사용했습니다');
+        }
+        throw new Error(err.error || `서버 오류 (${res.status})`);
+      }
+
+      const data = await res.json();
+      usageCount++;
+      updateUsageUI();
+      renderResult(data);
+
+    } catch (err) {
+      document.getElementById('resultArea').innerHTML =
+        `<div class="error-box">오류: ${err.message}</div>`;
+    } finally {
+      btn.disabled = usageCount >= FREE_LIMIT;
+      btn.textContent = '상품 등록 콘텐츠 생성하기 →';
+    }
+  }
+
+  function renderResult(data) {
+    const names = data.product_names || [];
+    const tags = data.tags || [];
+    const desc = data.description || '';
+    const labels = ['SEO 최적화형', '타겟 고객형', '혜택 강조형'];
+
+    const namesHtml = names.map((n, i) => {
+      const len = n.length;
+      return `<div class="name-item">
+        <div style="flex:1">
+          <span class="name-badge">${labels[i] || ''}</span>
+          <div class="name-text">${n}</div>
+        </div>
+        <span class="char-badge ${len <= 40 ? 'char-ok' : 'char-over'}">${len}자</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('resultArea').innerHTML = `
+      <div class="card">
+        <div class="section-block">
+          <div class="block-label">상품명 3가지 버전</div>
+          ${namesHtml}
+        </div>
+        <div class="divider"></div>
+        <div class="section-block">
+          <div class="block-label">검색 태그 ${tags.length}개</div>
+          <div class="tags-wrap">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-block">
+          <div class="block-label">상세 설명문 (${desc.length}자)</div>
+          <div class="desc-box">${desc}</div>
+        </div>
+      </div>`;
+  }
+
+  init();
 </script>
 </body>
 </html>
