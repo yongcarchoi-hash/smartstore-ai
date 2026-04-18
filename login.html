@@ -107,7 +107,7 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
 
   let mode = 'login';
 
@@ -153,8 +153,15 @@
       if (!ok) {
         showMsg(data.msg || data.message || '회원가입 실패. 다시 시도해주세요.', 'err');
       } else {
-        showMsg('가입 완료! 바로 로그인해보세요.', 'ok');
-        setMode('login');
+        showMsg('가입 완료! 2초 후 로그인 화면으로 이동합니다.', 'ok');
+        const signupEmail = email;
+        setTimeout(() => {
+          setMode('login');
+          document.getElementById('email').value = signupEmail;
+          document.getElementById('password').value = '';
+          document.getElementById('password').focus();
+          document.getElementById('msg').className = 'msg';
+        }, 2000);
       }
     } else {
       const { ok, data } = await apiCall('token?grant_type=password', { email, password });
