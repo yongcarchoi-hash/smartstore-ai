@@ -3,8 +3,56 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { productName, price, features, target } = req.body;
+  // ── 1. JWT 토큰 확인 ──────────────────────────────────────
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.replace('Bearer ', '').trim();
+  if (!token) {
+    return res.status(401).json({ error: '로그인이 필요합니다' });
+  }
 
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
+
+  // 토큰으로 사용자 정보 가져오기
+  const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'apikey': SERVICE_KEY
+    }
+  });
+
+  if (!userRes.ok) {
+    return res.status(401).json({ error: '인증에 실패했습니다. 다시 로그인해주세요.' });
+  }
+
+  const user = await userRes.json();
+  const userId = user.id;
+
+  // ── 2. 사용자 플랜 확인 ──────────────────────────────────
+  const profileRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=plan`,
+    { headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY } }
+  );
+  const profiles = await profileRes.json();
+  const plan = profiles?.[0]?.plan || 'free';
+
+  // ── 3. 무료 사용자 횟수 체크 (하루 3회) ──────────────────
+  if (plan === 'free') {
+    const today = new Date().toISOString().split('T')[0];
+    const usageRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&created_at=gte.${today}T00:00:00&created_at=lte.${today}T23:59:59&select=id`,
+      { headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY, 'Prefer': 'count=exact' } }
+    );
+    const countHeader = usageRes.headers.get('content-range') || '0-0/0';
+    const total = parseInt(countHeader.split('/')[1] || '0', 10);
+
+    if (total >= 3) {
+      return res.status(429).json({ error: '오늘 무료 사용 횟수(3회)를 모두 사용했습니다' });
+    }
+  }
+
+  // ── 4. Claude API 호출 ───────────────────────────────────
+  const { productName, price, features, target } = req.body;
   if (!productName) {
     return res.status(400).json({ error: '상품명을 입력해주세요' });
   }
@@ -24,21 +72,19 @@ export default async function handler(req, res) {
 - 특수문자 최소화, 중복 키워드 금지
 
 [태그 규칙]
-- 정확히 10개
-- 2~4단어 복합키워드 우선
+- 정확히 10개 / 2~4단어 복합키워드 우선
 - 소비자 실제 검색 패턴 반영
 - 다양한 사용 상황/속성/용도 커버
 
 [설명문 규칙 — 생활용품 특화]
-- 150~250자
+- 150~250자 / 이모지 1~2개
 - 첫 문장: 핵심 구매 이유
 - 중간: 주요 특징 3~4가지 (수치/소재/용량 포함)
 - 마무리: 구매 유도 문구
-- 혜택 중심 서술, 이모지 1~2개
 - 사이즈/용량/소재 반드시 포함`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,28 +102,30 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      const errMsg = data?.error?.message || `Anthropic API 오류 (${response.status})`;
-      return res.status(500).json({ error: errMsg });
+    const claudeData = await claudeRes.json();
+    if (!claudeRes.ok) {
+      return res.status(500).json({ error: claudeData?.error?.message || 'Claude API 오류' });
     }
 
-    const rawText = data.content?.[0]?.text || '';
-
+    const rawText = claudeData.content?.[0]?.text || '';
     const cleaned = rawText.replace(/```json|```/gi, '').trim();
     const jsonStart = cleaned.indexOf('{');
     const jsonEnd = cleaned.lastIndexOf('}');
-
     if (jsonStart === -1 || jsonEnd === -1) {
-      return res.status(500).json({
-        error: 'JSON을 찾을 수 없습니다. 다시 시도해주세요.',
-        raw: rawText.substring(0, 200)
-      });
+      return res.status(500).json({ error: '응답 파싱 실패. 다시 시도해주세요.' });
     }
+    const parsed = JSON.parse(cleaned.substring(jsonStart, jsonEnd + 1));
 
-    const jsonStr = cleaned.substring(jsonStart, jsonEnd + 1);
-    const parsed = JSON.parse(jsonStr);
+    // ── 5. 사용 횟수 기록 ─────────────────────────────────
+    await fetch(`${SUPABASE_URL}/rest/v1/usage_logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+        'apikey': SERVICE_KEY
+      },
+      body: JSON.stringify({ user_id: userId })
+    });
 
     return res.status(200).json(parsed);
 
