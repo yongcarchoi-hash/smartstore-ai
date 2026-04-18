@@ -33,6 +33,17 @@
   input[type="text"], textarea { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; transition: border-color 0.15s; resize: none; }
   input:focus, textarea:focus { border-color: var(--accent); }
   textarea { min-height: 80px; line-height: 1.5; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  select { width: 100%; font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; outline: none; cursor: pointer; }
+  select:focus { border-color: var(--accent); }
+  .notice-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid var(--border); gap: 12px; }
+  .notice-row:last-child { border-bottom: none; }
+  .notice-key { font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; width: 130px; flex-shrink: 0; }
+  .notice-val { font-size: 13px; color: var(--text); flex: 1; }
+  .notice-copy { font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; cursor: pointer; font-family: inherit; white-space: nowrap; flex-shrink: 0; }
+  .notice-copy:hover { background: var(--border); }
+  .notice-copy.copied { color: var(--success); border-color: var(--success); background: var(--success-bg); }
+  .notice-guide { font-size: 12px; color: var(--warning); background: var(--warning-bg); border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; }
   .btn-row { display: flex; gap: 10px; margin-top: 14px; }
   .btn { flex: 1; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.85; }
@@ -78,7 +89,7 @@
   .notice-table td:first-child { color: var(--muted); font-weight: 500; white-space: nowrap; width: 140px; background: var(--bg); border-right: 1px solid var(--border); }
   .notice-table td:last-child { color: var(--text); }
   .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-  @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
+  @media (max-width: 520px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .topbar { padding: 0 1rem; } }
 </style>
 </head>
 <body>
@@ -123,6 +134,27 @@
         <textarea id="target" placeholder="예: 직장인 출퇴근, 운동, 캠핑, 선물용"></textarea>
       </div>
     </div>
+    <div class="grid-3">
+      <div class="field">
+        <label>제조자/브랜드 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
+        <input type="text" id="manufacturer" placeholder="예: 삼성, OEM, 자체브랜드">
+      </div>
+      <div class="field">
+        <label>원산지 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
+        <select id="origin">
+          <option value="">선택 안 함</option>
+          <option value="국내산">국내산</option>
+          <option value="중국산">중국산</option>
+          <option value="일본산">일본산</option>
+          <option value="미국산">미국산</option>
+          <option value="기타 수입산">기타 수입산</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>A/S 연락처 <span style="color:var(--hint);font-weight:400">(선택)</span></label>
+        <input type="text" id="asContact" placeholder="예: 010-1234-5678">
+      </div>
+    </div>
     <div class="btn-row">
       <button class="btn" id="runBtn" onclick="runGenerate()">상품 등록 콘텐츠 생성하기 →</button>
       <button class="btn-reset" id="resetBtn" onclick="resetForm()">새 상품 입력</button>
@@ -134,7 +166,7 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
   const FREE_LIMIT = 3;
   let usageCount = 0;
 
@@ -189,6 +221,9 @@
     document.getElementById('price').value = '';
     document.getElementById('features').value = '';
     document.getElementById('target').value = '';
+    document.getElementById('manufacturer').value = '';
+    document.getElementById('origin').value = '';
+    document.getElementById('asContact').value = '';
     document.getElementById('resultArea').innerHTML = '';
     document.getElementById('resetBtn').style.display = 'none';
     document.getElementById('productName').focus();
@@ -222,6 +257,9 @@
     const price = document.getElementById('price').value.trim();
     const features = document.getElementById('features').value.trim();
     const target = document.getElementById('target').value.trim();
+    const manufacturer = document.getElementById('manufacturer').value.trim();
+    const origin = document.getElementById('origin').value;
+    const asContact = document.getElementById('asContact').value.trim();
     if (!productName) { alert('상품명을 입력해주세요'); return; }
 
     const btn = document.getElementById('runBtn');
@@ -234,7 +272,7 @@
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ productName, price, features, target })
+        body: JSON.stringify({ productName, price, features, target, manufacturer, origin, asContact })
       });
 
       if (res.status === 401) { localStorage.clear(); window.location.href = '/login.html'; return; }
@@ -280,13 +318,19 @@
       `<span class="tag" onclick="copyTag(this,'${t}')">${t}</span>`
     ).join('');
 
+    const noticeLabels = {
+      '품명및모델명':'품명 및 모델명','크기및용량':'크기/용량',
+      '소재및재질':'소재/재질','제조자':'제조자','수입여부':'수입 여부',
+      '품질보증기준':'품질보증기준','AS책임자':'A/S 책임자'
+    };
     const noticeHtml = Object.entries(notice).map(([k, v]) => {
-      const label = {
-        '품명및모델명':'품명 및 모델명','크기및용량':'크기/용량',
-        '소재및재질':'소재/재질','제조자':'제조자','수입여부':'수입 여부',
-        '품질보증기준':'품질보증기준','AS책임자':'A/S 책임자'
-      }[k] || k;
-      return `<tr><td>${label}</td><td>${v}</td></tr>`;
+      const label = noticeLabels[k] || k;
+      const safeV = v.replace(/'/g, "\\'");
+      return `<div class="notice-row">
+        <span class="notice-key">${label}</span>
+        <span class="notice-val">${v}</span>
+        <button class="notice-copy" onclick="copyNoticeItem('${safeV}', this)">복사</button>
+      </div>`;
     }).join('');
 
     document.getElementById('resultArea').innerHTML = `
@@ -318,22 +362,19 @@
         <div class="section-block">
           <div class="block-header">
             <div class="block-label">상품 정보 제공고시</div>
-            <button class="copy-all-btn" onclick="copyNotice()">전체 복사</button>
           </div>
-          <div style="border:1px solid var(--border);border-radius:7px;overflow:hidden">
-            <table class="notice-table" id="noticeTable">${noticeHtml}</table>
-          </div>
+          <div class="notice-guide">각 항목 옆 복사 버튼을 눌러 스마트스토어에 직접 입력하세요. 제조자·원산지·A/S 연락처는 실제 정보를 확인 후 사용하세요.</div>
+          <div style="border:1px solid var(--border);border-radius:7px;overflow:hidden" id="noticeList">${noticeHtml}</div>
         </div>
       </div>`;
   }
 
-  function copyNotice() {
-    const rows = document.querySelectorAll('.notice-table tr');
-    const text = Array.from(rows).map(r => {
-      const cells = r.querySelectorAll('td');
-      return cells.length >= 2 ? `${cells[0].textContent}: ${cells[1].textContent}` : '';
-    }).filter(Boolean).join('\n');
-    navigator.clipboard.writeText(text);
+  function copyNoticeItem(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+    });
   }
 
   loadUser();
