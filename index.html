@@ -308,12 +308,12 @@
     document.getElementById('userEmail').textContent = data.email;
     userPlan = data.plan || 'free';
     if (userPlan === 'pro') { updateUI(); return; }
-    await loadUsage();
+    await loadUsage(data.plan);
   }
 
   let userPlan = 'free';
 
-  async function loadUsage() {
+  async function loadUsage(plan) {
     try {
       const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY }
@@ -343,6 +343,26 @@
       badge.className = 'usage-badge u-ok';
       if (!btn.classList.contains('done')) btn.disabled = false;
       banner.style.display = 'none';
+      return;
+    }
+
+    if (userPlan === 'lite') {
+      const remaining = 30 - usageCount;
+      if (remaining > 5) {
+        badge.textContent = `이번 달 ${remaining}회 남음`;
+        badge.className = 'usage-badge u-ok';
+        if (!btn.classList.contains('done')) btn.disabled = false;
+        banner.style.display = 'none';
+      } else if (remaining > 0) {
+        badge.textContent = `이번 달 ${remaining}회 남음`;
+        badge.className = 'usage-badge u-low';
+        if (!btn.classList.contains('done')) btn.disabled = false;
+        banner.style.display = 'none';
+      } else {
+        badge.textContent = '이번 달 한도 소진';
+        badge.className = 'usage-badge u-empty';
+        btn.disabled = true; banner.style.display = 'flex';
+      }
       return;
     }
 
