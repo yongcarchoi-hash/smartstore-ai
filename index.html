@@ -58,11 +58,14 @@
   select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239b9b98' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 
   .btn-row { display: flex; gap: 10px; margin-top: 2px; }
-  .btn-primary { flex: 1; padding: 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
+  .btn-primary { flex: 1; padding: 12px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--text); border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
   .btn-primary:hover { opacity: 0.85; }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-reset { padding: 12px 20px; font-family: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; }
-  .btn-reset:hover { background: #ebebea; }
+  .btn-primary.done { background: #d1d1ce; color: #8a8a87; cursor: default; opacity: 1; }
+  .btn-primary.done:hover { opacity: 1; }
+  .btn-reset { padding: 12px 20px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 10px; cursor: pointer; white-space: nowrap; display: none; transition: opacity 0.15s; }
+  .btn-reset:hover { opacity: 0.85; }
+  .btn-reset.visible { display: block; }
 
   .upgrade-banner { background: #eff4ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
   .upgrade-banner p { font-size: 13px; color: var(--accent); font-weight: 500; }
@@ -215,7 +218,7 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
+  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
   const FREE_LIMIT = 3;
   let usageCount = 0;
 
@@ -271,8 +274,12 @@
     });
     document.getElementById('origin').value = '';
     document.getElementById('resultArea').innerHTML = '';
-    document.getElementById('resetBtn').style.display = 'none';
-    document.getElementById('runBtn').textContent = '네이버 + 쿠팡 + AI FAQ 생성하기 →';
+    const resetBtn = document.getElementById('resetBtn');
+    const runBtn = document.getElementById('runBtn');
+    resetBtn.classList.remove('visible');
+    runBtn.classList.remove('done');
+    runBtn.disabled = usageCount >= FREE_LIMIT ? true : false;
+    runBtn.textContent = '네이버 + 쿠팡 + AI FAQ 생성하기 →';
     document.getElementById('productName').focus();
   }
 
@@ -324,7 +331,12 @@
 
       const data = await res.json();
       usageCount++; updateUI(); renderResult(data);
-      document.getElementById('resetBtn').style.display = 'block';
+      const runBtn2 = document.getElementById('runBtn');
+      const resetBtn2 = document.getElementById('resetBtn');
+      runBtn2.classList.add('done');
+      runBtn2.disabled = true;
+      runBtn2.textContent = '✓ 생성 완료';
+      resetBtn2.classList.add('visible');
     } catch (err) {
       document.getElementById('resultArea').innerHTML = `<div class="error-box">오류: ${err.message}</div>`;
     } finally {
