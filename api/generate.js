@@ -21,13 +21,40 @@ export default async function handler(req, res) {
   const plan = (await profileRes.json())?.[0]?.plan || 'free';
 
   if (plan === 'free') {
+    // free: 하루 1회 (첫 3회 체험은 프론트에서 관리)
     const today = new Date().toISOString().split('T')[0];
     const usageRes = await fetch(
       `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&created_at=gte.${today}T00:00:00&created_at=lte.${today}T23:59:59&select=id`,
       { headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY, 'Prefer': 'count=exact' } }
     );
-    const total = parseInt((usageRes.headers.get('content-range') || '0/0').split('/')[1], 10);
-    if (total >= 3) return res.status(429).json({ error: '오늘 무료 사용 횟수(3회)를 모두 사용했습니다' });
+    const todayTotal = parseInt((usageRes.headers.get('content-range') || '0/0').split('/')[1], 10);
+
+    // 전체 사용 횟수 확인 (첫 3회 체험 여부)
+    const allUsageRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&select=id`,
+      { headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY, 'Prefer': 'count=exact' } }
+    );
+    const allTotal = parseInt((allUsageRes.headers.get('content-range') || '0/0').split('/')[1], 10);
+
+    const dailyLimit = allTotal < 3 ? 3 : 1; // 첫 3회 체험 후 하루 1회
+    if (todayTotal >= dailyLimit) {
+      const msg = allTotal < 3
+        ? '오늘 무료 체험 횟수를 모두 사용했습니다'
+        : '오늘 무료 사용 횟수(1회)를 사용했습니다. Pro 플랜으로 더 사용하세요';
+      return res.status(429).json({ error: msg });
+    }
+  }
+
+  if (plan === 'lite') {
+    // lite: 월 30회
+    const monthStart = new Date();
+    monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+    const usageRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=id`,
+      { headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY, 'Prefer': 'count=exact' } }
+    );
+    const monthTotal = parseInt((usageRes.headers.get('content-range') || '0/0').split('/')[1], 10);
+    if (monthTotal >= 30) return res.status(429).json({ error: '이번 달 Lite 플랜 한도(30회)를 모두 사용했습니다' });
   }
 
   const { productName, price, features, target, manufacturer, origin, category } = req.body;
