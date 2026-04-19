@@ -3,89 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로그인 — 스마트스토어 AI</title>
+<title>로그인 — AI 커머스 콘텐츠</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
-    background: #f7f7f5;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
+    background: #f7f7f5; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
   }
-  .box {
-    background: #fff;
-    border: 1px solid #e4e4e0;
-    border-radius: 16px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 400px;
-  }
+  .box { background: #fff; border: 1px solid #e4e4e0; border-radius: 16px; padding: 2rem; width: 100%; max-width: 400px; }
   .logo { text-align: center; margin-bottom: 1.75rem; }
   .logo h1 { font-size: 18px; font-weight: 600; }
   .logo p { font-size: 13px; color: #6b6b68; margin-top: 4px; }
-  .tabs {
-    display: flex;
-    border: 1px solid #e4e4e0;
-    border-radius: 10px;
-    padding: 3px;
-    margin-bottom: 1.5rem;
-    gap: 3px;
-  }
-  .tab {
-    flex: 1;
-    padding: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: center;
-    border-radius: 7px;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    color: #6b6b68;
-    font-family: inherit;
-  }
+  .tabs { display: flex; border: 1px solid #e4e4e0; border-radius: 10px; padding: 3px; margin-bottom: 1.5rem; gap: 3px; }
+  .tab { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; text-align: center; border-radius: 7px; cursor: pointer; border: none; background: transparent; color: #6b6b68; font-family: inherit; }
   .tab.on { background: #1a1a18; color: #fff; }
   .field { margin-bottom: 12px; }
   .field label { display: block; font-size: 13px; color: #6b6b68; margin-bottom: 5px; font-weight: 500; }
-  .field input {
-    width: 100%;
-    font-family: inherit;
-    font-size: 14px;
-    color: #1a1a18;
-    background: #f7f7f5;
-    border: 1px solid #e4e4e0;
-    border-radius: 7px;
-    padding: 10px 12px;
-    outline: none;
-  }
+  .field input { width: 100%; font-family: inherit; font-size: 14px; color: #1a1a18; background: #f7f7f5; border: 1px solid #e4e4e0; border-radius: 7px; padding: 10px 12px; outline: none; }
   .field input:focus { border-color: #2563eb; }
-  .btn {
-    width: 100%;
-    padding: 11px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    background: #1a1a18;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 4px;
-  }
+  .btn { width: 100%; padding: 11px; font-family: inherit; font-size: 14px; font-weight: 600; color: #fff; background: #1a1a18; border: none; border-radius: 10px; cursor: pointer; margin-top: 4px; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .msg { font-size: 13px; padding: 10px 12px; border-radius: 7px; margin-top: 12px; display: none; }
+  .msg { font-size: 13px; padding: 10px 12px; border-radius: 7px; margin-top: 12px; display: none; line-height: 1.6; }
   .msg.err { background: #fef2f2; color: #dc2626; display: block; }
-  .msg.ok { background: #f0fdf4; color: #16a34a; display: block; }
+  .msg.ok  { background: #f0fdf4; color: #16a34a; display: block; }
 </style>
 </head>
 <body>
 <div class="box">
   <div class="logo">
-    <h1>스마트스토어 AI</h1>
-    <p>네이버 SEO 최적화 상품 등록 생성기</p>
+    <h1>AI 커머스 콘텐츠</h1>
+    <p>네이버·쿠팡 AI 검색 최적화 상품 등록 도구</p>
   </div>
 
   <div class="tabs">
@@ -107,71 +55,57 @@
 
 <script>
   const SUPABASE_URL = 'https://jslanxujlumkulspbfkt.supabase.co';
-  const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
-
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGFueHVqbHVta3Vsc3BiZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MjE4MTgsImV4cCI6MjA5MjA5NzgxOH0.F5UCm5Jrmy5cadgpns67ee-QKXQIWGlPPQS6tY73NRI';
   let mode = 'login';
 
   function setMode(m) {
     mode = m;
-    document.getElementById('tabLogin').className = m === 'login' ? 'tab on' : 'tab';
+    document.getElementById('tabLogin').className  = m === 'login'  ? 'tab on' : 'tab';
     document.getElementById('tabSignup').className = m === 'signup' ? 'tab on' : 'tab';
     document.getElementById('submitBtn').textContent = m === 'login' ? '로그인' : '회원가입';
     document.getElementById('msg').className = 'msg';
+    document.getElementById('msg').textContent = '';
+    document.getElementById('submitBtn').disabled = false;
   }
 
   function showMsg(text, type) {
     const el = document.getElementById('msg');
-    el.textContent = text;
-    el.className = 'msg ' + type;
+    el.textContent = text; el.className = 'msg ' + type;
   }
 
   async function apiCall(endpoint, body) {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY
-      },
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
       body: JSON.stringify(body)
     });
     return { ok: res.ok, data: await res.json() };
   }
 
   async function handleSubmit() {
-    const email = document.getElementById('email').value.trim();
+    const email    = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const btn = document.getElementById('submitBtn');
-
+    const btn      = document.getElementById('submitBtn');
     if (!email || !password) { showMsg('이메일과 비밀번호를 입력해주세요', 'err'); return; }
     if (password.length < 8) { showMsg('비밀번호는 8자 이상이어야 합니다', 'err'); return; }
 
-    btn.disabled = true;
-    btn.textContent = '처리 중...';
+    btn.disabled = true; btn.textContent = '처리 중...';
 
     if (mode === 'signup') {
       const { ok, data } = await apiCall('signup', { email, password });
       if (!ok) {
         showMsg(data.msg || data.message || '회원가입 실패. 다시 시도해주세요.', 'err');
+        btn.disabled = false; btn.textContent = '회원가입';
       } else {
-        showMsg('가입 완료! 가입하신 이메일로 인증 메일을 발송했습니다.', 'ok');
-        document.getElementById('submitBtn').disabled = true;
-        const signupEmail = email;
+        showMsg('가입 완료! 가입하신 이메일로 인증 메일을 발송했습니다.\n인증 후 로그인해주세요. 메일이 안 보이면 스팸함을 확인해주세요.', 'ok');
+        const savedEmail = email;
         setTimeout(() => {
           setMode('login');
-          document.getElementById('email').value = signupEmail;
+          document.getElementById('email').value = savedEmail;
           document.getElementById('password').value = '';
           document.getElementById('password').focus();
-          showMsg('이메일 인증 후 로그인해주세요. 메일이 안 보이면 스팸함을 확인해주세요.', 'ok');
-          document.getElementById('submitBtn').disabled = false;
+          showMsg('이메일 인증을 완료한 후 로그인해주세요.', 'ok');
         }, 3000);
-        const signupEmail = email;
-        setTimeout(() => {
-          setMode('login');
-          document.getElementById('email').value = signupEmail;
-          document.getElementById('password').value = '';
-          document.getElementById('password').focus();
-          document.getElementById('msg').className = 'msg';
-        }, 2000);
       }
     } else {
       const { ok, data } = await apiCall('token?grant_type=password', { email, password });
@@ -182,20 +116,17 @@
         } else {
           showMsg('이메일 또는 비밀번호가 올바르지 않습니다', 'err');
         }
+        btn.disabled = false; btn.textContent = '로그인';
       } else {
         localStorage.setItem('sb_token', data.access_token);
         localStorage.setItem('sb_refresh', data.refresh_token);
         window.location.href = '/';
       }
     }
-
-    btn.disabled = false;
-    btn.textContent = mode === 'login' ? '로그인' : '회원가입';
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubmit(); });
 
-  // 이미 로그인 상태면 메인으로
   const token = localStorage.getItem('sb_token');
   if (token) window.location.href = '/';
 </script>
