@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로그인 — AI 커머스 콘텐츠</title>
+<title>로그인 — 올릿(Allit)</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -32,8 +32,8 @@
 <body>
 <div class="box">
   <div class="logo">
-    <h1>AI 커머스 콘텐츠</h1>
-    <p>네이버·쿠팡 AI 검색 최적화 상품 등록 도구</p>
+    <h1>올릿<span style="color:#2563eb">(Allit)</span></h1>
+    <p>AI가 찾아오는 상품을 만들어드립니다</p>
   </div>
 
   <div class="tabs">
@@ -129,6 +129,12 @@
 
   const token = localStorage.getItem('sb_token');
   if (token) window.location.href = '/';
+
+  // URL 파라미터로 탭 자동 선택
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('mode') === 'signup') {
+    setMode('signup');
+  }
 </script>
 </body>
 </html>
