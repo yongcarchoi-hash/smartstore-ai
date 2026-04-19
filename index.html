@@ -287,7 +287,19 @@
     await loadUsage(user.id);
   }
 
+  let userPlan = 'free';
+
   async function loadUsage(userId) {
+    // 플랜 확인
+    const planRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=plan`,
+      { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY } }
+    );
+    const profiles = await planRes.json();
+    userPlan = profiles?.[0]?.plan || 'free';
+
+    if (userPlan === 'pro') { updateUI(); return; }
+
     const today = new Date().toISOString().split('T')[0];
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&created_at=gte.${today}T00:00:00&select=id`,
@@ -300,9 +312,18 @@
 
   function updateUI() {
     const badge = document.getElementById('usageBadge');
-    const remaining = FREE_LIMIT - usageCount;
     const btn = document.getElementById('runBtn');
     const banner = document.getElementById('upgradeBanner');
+
+    if (userPlan === 'pro') {
+      badge.textContent = '✦ Pro · 무제한';
+      badge.className = 'usage-badge u-ok';
+      if (!btn.classList.contains('done')) btn.disabled = false;
+      banner.style.display = 'none';
+      return;
+    }
+
+    const remaining = FREE_LIMIT - usageCount;
     if (remaining > 1) {
       badge.textContent = `오늘 ${remaining}회 남음`;
       badge.className = 'usage-badge u-ok';
@@ -338,7 +359,7 @@
     const runBtn = document.getElementById('runBtn');
     resetBtn.classList.remove('visible');
     runBtn.classList.remove('done');
-    runBtn.disabled = usageCount >= FREE_LIMIT;
+    runBtn.disabled = (userPlan !== 'pro' && usageCount >= FREE_LIMIT);
     runBtn.textContent = '네이버 + 쿠팡 + AI FAQ 생성하기 →';
     document.getElementById('productName').focus();
   }
@@ -553,6 +574,22 @@
       </div>`;
   }
 
+  // 이메일 인증 링크 클릭 후 토큰 처리
+  async function handleAuthCallback() {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken  = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      if (accessToken) {
+        localStorage.setItem('sb_token', accessToken);
+        if (refreshToken) localStorage.setItem('sb_refresh', refreshToken);
+        window.history.replaceState(null, '', '/');
+      }
+    }
+  }
+
+  handleAuthCallback();
   loadUser();
 </script>
 </body>
