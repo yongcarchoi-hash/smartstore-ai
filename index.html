@@ -274,8 +274,30 @@
   let usageCount = 0;
   let selectedCategory = '생활용품';
 
-  const token = localStorage.getItem('sb_token');
+  let token = localStorage.getItem('sb_token');
   if (!token) window.location.href = '/login.html';
+
+  // 토큰 자동 갱신 (55분마다)
+  async function refreshToken() {
+    const refresh = localStorage.getItem('sb_refresh');
+    if (!refresh) return;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ refresh_token: refresh })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.access_token) {
+          token = data.access_token;
+          localStorage.setItem('sb_token', data.access_token);
+          if (data.refresh_token) localStorage.setItem('sb_refresh', data.refresh_token);
+        }
+      }
+    } catch(e) { console.log('토큰 갱신 실패', e); }
+  }
+  setInterval(refreshToken, 55 * 60 * 1000);
 
   async function loadUser() {
     const res = await fetch('/api/me', {
