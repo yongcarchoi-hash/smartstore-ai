@@ -278,35 +278,36 @@
   if (!token) window.location.href = '/login.html';
 
   async function loadUser() {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY }
+    const res = await fetch('/api/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) { localStorage.clear(); window.location.href = '/login.html'; return; }
-    const user = await res.json();
-    document.getElementById('userEmail').textContent = user.email;
-    await loadUsage(user.id);
+    const data = await res.json();
+    document.getElementById('userEmail').textContent = data.email;
+    userPlan = data.plan || 'free';
+    if (userPlan === 'pro') { updateUI(); return; }
+    await loadUsage();
   }
 
   let userPlan = 'free';
 
-  async function loadUsage(userId) {
-    // 플랜 확인
-    const planRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=plan`,
-      { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY } }
-    );
-    const profiles = await planRes.json();
-    userPlan = profiles?.[0]?.plan || 'free';
-
-    if (userPlan === 'pro') { updateUI(); return; }
-
-    const today = new Date().toISOString().split('T')[0];
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${userId}&created_at=gte.${today}T00:00:00&select=id`,
-      { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY } }
-    );
-    const rows = await res.json();
-    usageCount = Array.isArray(rows) ? rows.length : 0;
+  async function loadUsage() {
+    try {
+      const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY }
+      });
+      if (!userRes.ok) return;
+      const user = await userRes.json();
+      const today = new Date().toISOString().split('T')[0];
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/usage_logs?user_id=eq.${user.id}&created_at=gte.${today}T00:00:00&select=id`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_ANON_KEY } }
+      );
+      const rows = await res.json();
+      usageCount = Array.isArray(rows) ? rows.length : 0;
+    } catch(e) {
+      usageCount = 0;
+    }
     updateUI();
   }
 
